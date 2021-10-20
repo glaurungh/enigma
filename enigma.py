@@ -2,10 +2,40 @@ from shift import shift
 from rotor import rotor
 from reflector import reflector
 
+ROTORS_SHIFT = {
+    1: [17],
+    2: [5],
+    3: [22],
+    4: [10],
+    5: [0],
+    6: [0, 13],
+    7: [0, 13],
+    8: [0, 13]
+}
+
 def enigma(text, ref, rot1, shift1, rot2, shift2, rot3, shift3):
     res = []
     for s in text.upper():
         if s.isalpha():
+            
+            # Shift all the rotors
+            
+            shift3 = (shift3 + 1) % 26
+
+            if shift2+1 in ROTORS_SHIFT[rot2]:
+                shift2 = (shift2 + 1) % 26            
+                for sh in ROTORS_SHIFT[rot2]:
+                    if shift2 == sh:
+                        shift1 = (shift1 + 1) % 26
+            
+            for sh in ROTORS_SHIFT[rot3]:
+                if shift3 == sh:
+                    shift2 = (shift2 + 1) % 26
+        
+            #print(shift1, shift2, shift3)
+            
+            # End of rotors shiting
+            
             s = shift(s, shift3)
             s = rotor(s, rot3)
             s = shift(s, shift2-shift3)
@@ -23,4 +53,3 @@ def enigma(text, ref, rot1, shift1, rot2, shift2, rot3, shift3):
             s = shift(s, -shift3)
             res.append(s)
     return "".join(res)
-
